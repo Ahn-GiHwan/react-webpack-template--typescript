@@ -2,16 +2,17 @@ const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const RefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 module.exports = (env, option) => {
   return {
-    entry: "./src/index.js",
+    entry: "./src/index.tsx",
     output: {
       filename: "index.js",
       clean: true,
     },
     resolve: {
-      extensions: [".js", ".jsx"],
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
     },
     module: {
       rules: [
@@ -24,6 +25,13 @@ module.exports = (env, option) => {
               presets: ["@babel/preset-env", "@babel/preset-react"],
               plugins: [["@babel/plugin-transform-runtime", { corejs: 3 }]],
             },
+          },
+        },
+        {
+          test: /\.tsx?$/i, // .ts 에 한하여 ts-loader를 이용하여 transpiling
+          exclude: /node_module/,
+          use: {
+            loader: "ts-loader",
           },
         },
         {
@@ -54,6 +62,7 @@ module.exports = (env, option) => {
         patterns: [{ from: "static" }],
       }),
       new RefreshWebpackPlugin(),
+      new ForkTsCheckerWebpackPlugin(),
     ],
     devServer: {
       hot: true,
